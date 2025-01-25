@@ -1,14 +1,17 @@
-import app from "./app.js";
-import { config } from 'dotenv';
+import app from "./App.js"
+import {connectDB} from "./config/database.js"
+import logger from "./logger/winston.logger.js";
 
-config();
+connectDB();
 
-const Port = process.env.PORT || 5000;  // Ensure a default port is set
+
+
+const Port = process.env.PORT;
 
 app.listen(Port, () => {
-    console.log(`Server is running on port ${Port}`);
-    // logger.info("⚙️  Server is running on port: " + process.env.PORT);
-});
+    // console.log(`Server is running on port ${Port}`)
+    logger.info("⚙️  Server is running on port: " + process.env.PORT);
+})
 
 
 
