@@ -24,6 +24,12 @@ export const createArea = async (req, res, next) => {
   }
   
   try {
+    const existingArea = await Area.findOne({ name, isdeleted: false });
+
+    if (existingArea) {
+      return next(errorHandler(400, "Area already exists"));
+    }
+
     const newArea = await Area.create({ name });
 
     res.status(201).json({
