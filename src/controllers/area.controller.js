@@ -1,3 +1,4 @@
+import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import Area from "../models/Area.model.js";
 import { errorHandler } from "../utlis/error.js";
 
@@ -16,17 +17,20 @@ export const getAreasByCityId = async (req, res, next) => {
 };
 
 export const createArea = async (req, res, next) => {
-  const { name, city } = req.body;
+  const { name } = req.body;
   
-  if (!name || !city) {
-    return next(errorHandler(400, "Name and City are required"));
+  if (!name ) {
+    return next(errorHandler(400, "Name is required"));
   }
   
-  const newArea = new Area({ name, city });
-
   try {
-    const area = await newArea.save();
-    res.status(201).json(area);
+    const newArea = await Area.create({ name });
+
+    res.status(201).json({
+      success: true,
+      message: "Area created successfully",
+      area: newArea,
+    });
   } catch (err) {
     next(errorHandler(500, err.message));  
   }
@@ -34,7 +38,7 @@ export const createArea = async (req, res, next) => {
 
 export const updateArea = async (req, res, next) => {
   const { areaId } = req.params;
-  const { name, city, isLive } = req.body;
+  const { name } = req.body;
 
   try {
     const updatedArea = await Area.findById(areaId);
@@ -44,12 +48,14 @@ export const updateArea = async (req, res, next) => {
     }
 
     updatedArea.name = name || updatedArea.name;
-    updatedArea.city = city || updatedArea.city;
-    updatedArea.isLive = isLive !== undefined ? isLive : updatedArea.isLive; 
-    updatedArea.updatedAt = new Date();
     
-    const area = await updatedArea.save();
-    res.status(200).json(area);
+
+     await updatedArea.save();
+    res.status(200).json({
+      success: true,
+      message: "Area updated successfully",
+      area: updatedArea,
+    });
   } catch (err) {
     next(errorHandler(500, err.message));
   }
@@ -59,19 +65,113 @@ export const deleteArea = async (req, res, next) => {
   const { areaId } = req.params;
 
   try {
-    const area = await Area.findById(areaId);
+    const area = await Area.findOne({_id:areaId, isdeleted: false});
 
     if (!area) {
       return next(errorHandler(404, "Area not found"));
     }
 
-    area.isLive = false;
+    area.isdeleted = true;
     area.deletedAt = new Date(); 
-    area.deletedBy = req.user._id; 
     
     await area.save();
-    res.status(200).json({ message: "Area marked as deleted" });
+    res.status(200).json({
+      success: true,
+      message: "Area marked as deleted" 
+    });
   } catch (err) {
     next(errorHandler(500, err.message));
   }
 };
+
+//get All Areas
+export const getAllAreas = catchAsyncError(async (req, res, next) => {
+
+  const areas = await Area.find({isdeleted: false}).sort({ createdAt: 1 })
+   .populate({
+    path: "cityId",
+    select: "name",
+    match: { isdeleted: false }, // Filter cities where isdeleted is false
+    sort: { createdAt: 1 },
+  });
+
+
+  res.status(200).json({
+    success: true,
+    areas,
+  });
+});
+
+//get Area by Id
+export const getAreaById = catchAsyncError(async (req, res, next) => {
+
+  const { areaId  } = req.params;
+
+  const area = await Area.findById({_id:areaId, isdeleted: false})
+  .populate({
+    path: "cityId",
+    select: "name",
+    match: { isdeleted: false }, // Filter cities where isdeleted is false
+    sort: { createdAt: 1 },
+  });
+
+  if (!area) return next(errorHandler(404, "Area not found"));
+
+  res.status(200).json({
+    success: true,
+    message: "Area found",
+    area,
+  });
+
+});
+
+// update Live status
+export const updateLiveStatus = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const area = await Area.findOne({_id:id, isdeleted: false});
+
+  if (!area) return next(errorHandler(404, "Area not found"));
+
+  area.isLive = !area.isLive;
+  await area.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Area live status updated",
+    area,
+  });
+});
+
+// get by getAreaByCityId 
+
+// export const getAreaByCityId = catchAsyncError(async (req, res, next) => {
+//   const { cityId } = req.params;
+//   const area = await Area.find({ cityId: cityId, isdeleted: false }).populate("cityId");
+
+//   if (!area) return next(errorHandler(404, "No areas found for the given city."));
+
+//   res.status(200).json({
+//     success: true,
+//     message: "Areas found by city",
+//     area,
+//   });
+// });
+
+export const getAreaByCityId = catchAsyncError(async (req, res, next) => {
+  const { cityId } = req.params;
+
+  const area = await Area.findOne({ cityId: { $in: [cityId] }, isdeleted: false })
+    .populate("cityId");
+
+  if (!area) return next(errorHandler(404, "No area found for the given city."));
+
+  // Extract only one city from the populated cityId array
+  const singleCity = area.cityId.find(city => city._id.toString() === cityId);
+
+  res.status(200).json({
+    success: true,
+    message: "Area found by city",
+    area: { ...area.toObject(), cityId: singleCity }, // Override cityId with only one city
+  });
+});
+

@@ -12,17 +12,18 @@ const doc = {
 
 const outputFile = "./swagger-output.json";
 const routes = [
-  "./routes/auth.route.js",
+  // "./routes/auth.route.js",
   "./routes/user.route.js",
   "./routes/city.route.js",
-  "./routes/contactForm.route.js",
-  "./routes/teacher.route.js",
+  // "./routes/contactForm.route.js",
+  // "./routes/teacher.route.js",
   "./routes/area.route.js",
 ];
 
 /* NOTE: If you are using the express Router, you must pass in the 'routes' only the 
 root file where the route starts, such as index.js, app.js, routes.js, etc ... */
 
-swaggerAutogen(outputFile, routes, doc).then(() => {
+swaggerAutogen({ openapi: '3.0.0' })(outputFile, routes, doc).then(() => {
   logger.info("Swagger file has been generated");
+  // import  ("./index.js"); // Auto Run your project
 });

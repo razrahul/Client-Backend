@@ -1,9 +1,15 @@
-import mongoose, { Schema } from 'mongoose';
-import BaseModelSchema from './Base.model.js'
+import mongoose, { Schema } from "mongoose";
+import BaseModelSchema from "./Base.model.js";
 
 const AreaSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  city: { type: Schema.Types.ObjectId, ref: "City", required: true },
+  cityId: [
+    { 
+      type: Schema.Types.ObjectId, 
+      ref: "City", 
+      required: true 
+    }
+  ],
   ...BaseModelSchema.obj, // Inherit from BaseModel
 });
 

@@ -1,68 +1,98 @@
 import City from "../models/City.model.js";
+import  Area  from "../models/Area.model.js";
 import { errorHandler } from "../utlis/error.js";
+import {catchAsyncError} from "../middlewares/catchAsyncError.js";
 
 // export const getAllCities = async (req, res, next) => {
 //   try {
-//     const cities = await City.find({ isLive: true });  
+//     const cities = await City.find({ isLive: true });
 //     if (!cities.length) {
 //       return next(errorHandler(404, "No cities found."));
 //     }
 //     res.status(200).json(cities);
 //   } catch (err) {
-//     next(errorHandler(500, err.message));  
+//     next(errorHandler(500, err.message));
 //   }
 // };
 export const getAllCities = async (req, res, next) => {
-  const { showDeleted } = req.query;  
-
   try {
-    const cities = showDeleted === 'true' ? await City.find() : await City.find({ isLive: true });
-    
-    if (!cities.length) {
+    const cities = await City.find({ isdeleted: false });
+
+    if (!cities) {
       return next(errorHandler(404, "No cities found."));
     }
 
-    res.status(200).json(cities);
+    res.status(200).json({
+      success: true,
+      message: "Cities fetched successfully",
+      cities,
+    });
   } catch (err) {
-    next(errorHandler(500, err.message));  
+    next(errorHandler(500, err.message));
   }
 };
 
-
 export const createCity = async (req, res, next) => {
-  const { name, isLive } = req.body;
+  const { AreaId } = req.params;
+
+  const { name } = req.body;
 
   if (!name) {
     return next(errorHandler(400, "City name is required"));
   }
 
-  const newCity = new City({ name, isLive });
-
   try {
-    const city = await newCity.save();
-    res.status(201).json(city);
+    const area = await Area.findOne({_id:AreaId, isdeleted: false});
+    if (!area) {
+      return next(errorHandler(404, "Area not found"));
+    }
+
+    const existingCity = await City.findOne({ name, isdeleted: false });
+    if (existingCity) {
+      return next(errorHandler(400, "City already exists"));
+    }
+
+    const newCity = await City.create({
+      name,
+      // createdBy: userId,
+    });
+
+    //Add the city to the area
+    area.cityId.push(newCity._id);
+
+    await area.save();
+
+    res.status(201).json({
+      success: true,
+      message: "City created successfully",
+      city: newCity,
+    });
   } catch (err) {
-    next(errorHandler(500, err.message));  
+    next(errorHandler(500, err.message));
   }
 };
 
 export const updateCity = async (req, res, next) => {
   const { cityId } = req.params;
-  const { name, isLive } = req.body;
+  const { name } = req.body;
 
   try {
-    const updatedCity = await City.findById(cityId);
+    const updatedCity = await City.findById({_id:cityId, isdeleted: false});
 
     if (!updatedCity) {
       return next(errorHandler(404, "City not found"));
     }
 
     updatedCity.name = name || updatedCity.name;
-    updatedCity.isLive = isLive !== undefined ? isLive : updatedCity.isLive; 
-    updatedCity.updatedAt = new Date();
-    
-    const city = await updatedCity.save();
-    res.status(200).json(city);
+    // updatedCity.updatedBy = 1;
+
+    await updatedCity.save();
+
+    res.status(200).json({
+      success: true,
+      message: "City updated successfully",
+      city: updatedCity,
+    });
   } catch (err) {
     next(errorHandler(500, err.message));
   }
@@ -72,19 +102,64 @@ export const deleteCity = async (req, res, next) => {
   const { cityId } = req.params;
 
   try {
-    const city = await City.findById(cityId);
+    const city = await City.findById({_id:cityId, isdeleted: false});
 
     if (!city) {
       return next(errorHandler(404, "City not found"));
     }
 
-    city.isLive = false; 
-    city.deletedAt = new Date(); 
-    city.deletedBy = req.user._id; 
-    
+    city.isdeleted = true;
+    // city.deletedBy = 1;
+    city.deletedAt = new Date();
+
     await city.save();
-    res.status(200).json({ message: "City marked as deleted" });
+    res.status(200).json({
+      success: true, 
+      message: "City marked as deleted"
+    });
   } catch (err) {
     next(errorHandler(500, err.message));
   }
 };
+
+//get city by id
+export const getCityById = catchAsyncError(async (req, res, next) => {
+
+  const { id } = req.params;
+  
+  const city = await City.findById({ _id: id, isdeleted: false });
+
+  if (!city) {
+    return next(errorHandler(404, "City not found"));
+  }
+
+  res.status(200).json({
+    success: true,
+    city,
+  });
+});
+
+// update Live
+export const updateLive = catchAsyncError(async (req, res, next) => {
+  const { cityId } = req.params;
+
+  const city = await City.findById({ _id: cityId, isdeleted:false});
+
+  if (!city) {
+    return next(errorHandler(404, "City not found"));
+  }
+
+  city.isLive = !city.isLive;
+
+  await city.save();
+
+  res.status(200).json({
+    success: true,
+    message: city.isLive ? "City marked as live" : "City marked as not live",
+    city,
+  });
+
+
+
+});
+

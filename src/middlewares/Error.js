@@ -1,5 +1,6 @@
 import logger from "../logger/winston.logger.js"
-import ErrorHandler from "../Utils/errorHandler.js";
+// import ErrorHandler from "../Utils/errorHandler.js";
+import {errorHandler as ErrorHandler} from "../Utils/error.js";
 
 // const ErrorMiddleware = (err, req, res, next) => {
 //   err.statusCode = err.statusCode || 500;
