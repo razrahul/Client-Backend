@@ -1,58 +1,66 @@
+import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import ContactForm from "../models/ContactForm.model.js";
-import { errorHandler } from "../utlis/error.js";
+import  ErrorHandler from "../Utils/errorHandler.js";
 
-export const getContactForms = async (req, res, next) => {
-  const { showDeleted } = req.query;  
+export const getAllContactForms = async (req, res, next) => {
 
   try {
-    const contactForms = showDeleted === 'true' ? await ContactForm.find() : await ContactForm.find({ isLive: true });  
+    const contactForms = await ContactForm.find({ isdeleted: false });  
     if (!contactForms.length) {
-      return next(errorHandler(404, "No contact forms found."));
+      return next(new ErrorHandler(404, "No contact forms found."));
     }
     
-    res.status(200).json(contactForms);
+    res.status(200).json({
+      success: true,
+      message: "Contact forms fetched successfully",
+      contactForms: contactForms,
+    });
   } catch (err) {
-    next(errorHandler(500, err.message));  
+    next(new ErrorHandler(500, err.message));  
   }
 };
 
 export const submitContactForm = async (req, res, next) => {
-  const { name, number, whatsappNumber, email, role, class: className, subjectList, timeslot, feeRange, incomplete } = req.body;
+  const { name, number, whatsappNumber, email, role, class: className, subjectList, timeslot, feeRange } = req.body;
 
   if (!name || !number || !email || !role || !className || !subjectList || !timeslot || !feeRange) {
-    return next(errorHandler(400, "All fields are required except 'incomplete'"));
+    return next(new ErrorHandler(400, "All fields are required except 'incomplete'"));
   }
 
-  const newContactForm = new ContactForm({
-    name,
-    number,
-    whatsappNumber,
-    email,
-    role,
-    class: className,
-    subjectList,
-    timeslot,
-    feeRange,
-    incomplete,
-  });
+  
 
   try {
-    const contactForm = await newContactForm.save();
-    res.status(201).json(contactForm);
+    const newContactForm = await ContactForm.create({
+      name,
+      number,
+      whatsappNumber,
+      email,
+      role,
+      class: className,
+      subjectList,
+      timeslot,
+      feeRange,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Contact form submitted successfully",
+      contactForm: newContactForm,
+    });
   } catch (err) {
-    next(errorHandler(500, err.message));  
+    next(new ErrorHandler(500, err.message));  
   }
 };
 
 export const updateContactForm = async (req, res, next) => {
   const { formId } = req.params;
-  const { name, number, whatsappNumber, email, role, class: className, subjectList, timeslot, feeRange, incomplete, isLive } = req.body;
+  const { name, number, whatsappNumber, email, role, class: className, subjectList, timeslot, feeRange } = req.body;
 
   try {
-    const updatedContactForm = await ContactForm.findById(formId);
+    const updatedContactForm = await ContactForm.findById({_id:formId, isdeleted: false});
 
     if (!updatedContactForm) {
-      return next(errorHandler(404, "Contact form not found"));
+      return next(new ErrorHandler(404, "Contact form not found"));
     }
 
     updatedContactForm.name = name || updatedContactForm.name;
@@ -64,14 +72,16 @@ export const updateContactForm = async (req, res, next) => {
     updatedContactForm.subjectList = subjectList || updatedContactForm.subjectList;
     updatedContactForm.timeslot = timeslot || updatedContactForm.timeslot;
     updatedContactForm.feeRange = feeRange || updatedContactForm.feeRange;
-    updatedContactForm.incomplete = incomplete !== undefined ? incomplete : updatedContactForm.incomplete;
-    updatedContactForm.isLive = isLive !== undefined ? isLive : updatedContactForm.isLive; 
-    updatedContactForm.updatedAt = new Date();
     
+
     const contactForm = await updatedContactForm.save();
-    res.status(200).json(contactForm);
+    res.status(200).json({
+      success: true,
+      message: "Contact form updated successfully",
+      contactForm: contactForm,
+    });
   } catch (err) {
-    next(errorHandler(500, err.message));
+    next(new ErrorHandler(500, err.message));
   }
 };
 
@@ -79,18 +89,75 @@ export const deleteContactForm = async (req, res, next) => {
   const { formId } = req.params;
 
   try {
-    const contactForm = await ContactForm.findById(formId);
+    const contactForm = await ContactForm.findById({_id:formId, isdeleted: false});
 
     if (!contactForm) {
-      return next(errorHandler(404, "Contact form not found"));
+      return next(new ErrorHandler(404, "Contact form not found"));
     }
 
-    contactForm.isLive = false; 
+    contactForm.isdeleted = true;
     contactForm.deletedAt = new Date(); 
-    contactForm.deletedBy = req.user._id; 
+
+
     await contactForm.save();
-    res.status(200).json({ message: "Contact form marked as deleted" });
+    res.status(200).json({ 
+      success: true,
+      message: "Contact form marked as deleted",
+      contactForm: contactForm, 
+    });
   } catch (err) {
-    next(errorHandler(500, err.message));
+    next(new ErrorHandler(500, err.message));
   }
 };
+
+// contact from by id
+export const getContactFormById = catchAsyncError(async (req, res, next) => {
+  const { formId } = req.params;
+
+  const contactForm = await ContactForm.findById({_id:formId, isdeleted: false});
+
+  if (!contactForm) {
+    return next(new ErrorHandler(404, "Contact form not found"));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Contact form fetched successfully",
+    contactForm: contactForm,
+  });
+});
+
+//update Live
+export const updateLiveFrom = catchAsyncError(async (req, res, next) => {
+  const { formId } = req.params;
+
+  const contactForm = await ContactForm.findById({_id:formId, isdeleted: false});
+  if (!contactForm) {
+    return next(new ErrorHandler(404, "Contact form not found"));
+  }
+  contactForm.isLive = !contactForm.isLive;
+  await contactForm.save();
+  res.status(200).json({
+    success: true,
+    message: "Contact form updated successfully",
+    contactForm: contactForm,
+  });
+});
+
+//update incomplete
+export const updateIncomplete = catchAsyncError(async (req, res, next) => {
+  const { formId } = req.params;
+
+  const contactForm = await ContactForm.findById({_id:formId, isdeleted: false});
+  
+  if (!contactForm) {
+    return next(new ErrorHandler(404, "Contact form not found"));
+  }
+  contactForm.incomplete = !contactForm.incomplete;
+  await contactForm.save();
+  res.status(200).json({
+    success: true,
+    message: "Contact form updated successfully",
+    contactForm: contactForm,
+  });
+});
