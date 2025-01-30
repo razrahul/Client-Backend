@@ -40,7 +40,6 @@ app.use(cookieParser());
 
 // Importing & using Routes
 import UserRouter from "./routes/user.route.js";
-import authRoutes from "./routes/auth.route.js";
 import areaRoutes from "./routes/area.route.js";
 import cityRoutes from "./routes/city.route.js";
 import contactFormRoutes from "./routes/contactForm.route.js";
@@ -48,7 +47,6 @@ import teacherRoutes from "./routes/teacher.route.js";
 
 
 app.use("/api/v1", UserRouter);
-app.use("/api/v1", authRoutes);
 app.use("/api/v1", areaRoutes);
 app.use("/api/v1", cityRoutes);
 app.use("/api/v1", contactFormRoutes);

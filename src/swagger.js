@@ -14,10 +14,11 @@ const outputFile = "./swagger-output.json";
 const routes = [
   // "./routes/auth.route.js",
   "./routes/user.route.js",
-  "./routes/city.route.js",
-  // "./routes/contactForm.route.js",
-  // "./routes/teacher.route.js",
   "./routes/area.route.js",
+  "./routes/city.route.js",
+  "./routes/contactForm.route.js",
+  "./routes/teacher.route.js",
+  
 ];
 
 /* NOTE: If you are using the express Router, you must pass in the 'routes' only the 
