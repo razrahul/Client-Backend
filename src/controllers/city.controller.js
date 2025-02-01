@@ -1,7 +1,7 @@
 import City from "../models/City.model.js";
 import  Area  from "../models/Area.model.js";
 import {catchAsyncError} from "../middlewares/catchAsyncError.js";
-import  ErrorHandler from "../Utils/errorHandler.js";
+import  ErrorHandler from "../utils/errorHandler.js";
 
 // export const getAllCities = async (req, res, next) => {
 //   try {

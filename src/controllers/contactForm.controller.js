@@ -1,6 +1,6 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import ContactForm from "../models/ContactForm.model.js";
-import  ErrorHandler from "../Utils/errorHandler.js";
+import  ErrorHandler from "../utils/errorHandler.js";
 import sendWhatsAppMessage from "../service/whatsappService.js"
 
 export const getAllContactForms = async (req, res, next) => {

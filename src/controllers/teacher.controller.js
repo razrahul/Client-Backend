@@ -1,6 +1,6 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import Teacher from "../models/Teacher.model.js";
-import ErrorHandler from "../Utils/errorHandler.js";
+import ErrorHandler from "../utils/errorHandler.js";
 
 export const getAllTeachers = async (req, res, next) => {
  

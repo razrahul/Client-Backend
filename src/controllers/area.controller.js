@@ -1,7 +1,6 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import Area from "../models/Area.model.js";
-import  ErrorHandler from "../Utils/errorHandler.js";
-
+import  ErrorHandler from "../utils/errorHandler.js"
 export const getAreasByCityId = async (req, res, next) => {
   const { showDeleted } = req.query;  
   const { cityId } = req.params;
