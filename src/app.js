@@ -5,7 +5,7 @@ import cors from "cors";
 import ErrorMiddleware from "./middlewares/Error.js";
 import morganMiddleware from "./logger/morgan.logger.js";
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocument from './swagger-output.json' assert {type:'json'};
+import swaggerDocument from './swagger-output.json'
 
 
 config({
