@@ -7,11 +7,13 @@ import {
     getTeacherById,
     updateLiveTeacher
 } from "../controllers/teacher.controller.js";
+import { upload } from "../upload/upload.js";
+
 
 const router = express.Router();
 router.get("/getTeachers", getAllTeachers);
-router.post("/createTeacher", createTeacher);
-router.put("/updateTeacher/:teacherId", updateTeacher);
+router.post("/createTeacher",upload, createTeacher);
+router.put("/updateTeacher/:teacherId",upload, updateTeacher);
 router.delete("/deleteTeacher/:teacherId", deleteTeacher);
 
 //get teacher by id

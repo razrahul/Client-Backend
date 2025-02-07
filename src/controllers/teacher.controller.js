@@ -1,5 +1,6 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import Teacher from "../models/Teacher.model.js";
+import { uploadToCloudinary } from "../upload/upload.js";
 import ErrorHandler from "../utils/errorHandler.js";
 
 export const getAllTeachers = async (req, res, next) => {
@@ -37,9 +38,11 @@ export const createTeacher = async (req, res, next) => {
     return next(new ErrorHandler(400, "All fields are required"));
   }
 
-  //TODO: subject and charge rate should be array , then to stringfy and pudh in aarry to db
-
   try {
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.path);
+    }
     const newTeacher = await Teacher.create({
       name,
       city: cityId,
@@ -47,6 +50,7 @@ export const createTeacher = async (req, res, next) => {
       aboutUs,
       subject,
       chargeRate,
+      image: imageUrl,
     });
 
     const teacher = await Teacher.findById(newTeacher._id)
@@ -89,6 +93,13 @@ export const updateTeacher = async (req, res, next) => {
     updatedTeacher.subject = subject || updatedTeacher.subject;
     updatedTeacher.chargeRate = chargeRate || updatedTeacher.chargeRate;
     
+
+    if (req.file) {
+      const imageUrl = await uploadToCloudinary(req.file.path);  
+      updatedTeacher.image = imageUrl;  
+    }
+
+
     const teacher = await updatedTeacher.save();
 
     const teacherData = await Teacher.findById(teacher._id)

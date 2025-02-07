@@ -5,11 +5,10 @@ import cors from "cors";
 import ErrorMiddleware from "./middlewares/Error.js";
 import morganMiddleware from "./logger/morgan.logger.js";
 import swaggerUi from 'swagger-ui-express';
-// import swaggerDocument from './swagger-output.json'
-
+import swaggerDocument from './swagger-output.json' assert {type:'json'};
 
 config({
-    path: "./config/config.env",
+    path: "./.env",
   });
 
 
@@ -53,7 +52,7 @@ app.use("/api/v1", contactFormRoutes);
 app.use("/api/v1", teacherRoutes);
 
 
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 export default app;
 
 app.use(ErrorMiddleware);

@@ -8,6 +8,7 @@ const TeacherSchema = new mongoose.Schema({
     aboutUs: { type: String },
     subject: { type: String },
     chargeRate: { type: Number, required: true },
+    image: { type: String },
     ...BaseModelSchema.obj, // Inherit from BaseModel
   });
   
