@@ -1,15 +1,17 @@
 import twilio from 'twilio';
 import { config } from 'dotenv';
-config({
-    path: "../../.env",
-  });
 
+config(); // Load .env automatically
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const whatsappNumber = process.env.TWILIO_WHATSAPP_NUMBER;
 
-const client =  twilio(accountSid, authToken);
+if (!accountSid || !authToken || !whatsappNumber) {
+    throw new Error("Twilio credentials are missing in .env file");
+}
+
+const client = twilio(accountSid, authToken);
 
 /**
  * Send WhatsApp Message using Twilio API
@@ -20,22 +22,21 @@ const client =  twilio(accountSid, authToken);
 const sendWhatsAppMessage = async (mobile, message) => {
     try {
         if (!mobile || !message) {
-            throw new Error('Mobile number and message are required.');
+            throw new Error("Mobile number and message are required.");
         }
 
         const response = await client.messages.create({
             body: message,
-            from: `whatsapp:${whatsappNumber}`,
-            to: `whatsapp:+91${mobile}`
+            from: whatsappNumber,
+            to: `whatsapp:${mobile}` // Ensure mobile includes +91
         });
 
-        return response; // Return the API response
+        // console.log("Message sent successfully:", response.sid);
+        return response;
     } catch (error) {
-        console.error('Error sending WhatsApp message:', error.message);
+        console.error("Error sending WhatsApp message:", error.code, error.message, error.moreInfo);
         throw error;
     }
 };
-
-// module.exports = sendWhatsAppMessage;
 
 export default sendWhatsAppMessage;
