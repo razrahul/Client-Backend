@@ -5,7 +5,7 @@ import cors from "cors";
 import ErrorMiddleware from "./middlewares/Error.js";
 import morganMiddleware from "./logger/morgan.logger.js";
 import swaggerUi from 'swagger-ui-express';
-// import swaggerDocument from './swagger-output.json'
+// import swaggerDocument from './swagger-output.json' assert {type:'json'};
 
 
 config({
@@ -44,6 +44,7 @@ import areaRoutes from "./routes/area.route.js";
 import cityRoutes from "./routes/city.route.js";
 import contactFormRoutes from "./routes/contactForm.route.js";
 import teacherRoutes from "./routes/teacher.route.js";
+import studentRoutes from "./routes/student.route.js";
 
 
 app.use("/api/v1", UserRouter);
@@ -51,6 +52,7 @@ app.use("/api/v1", areaRoutes);
 app.use("/api/v1", cityRoutes);
 app.use("/api/v1", contactFormRoutes);
 app.use("/api/v1", teacherRoutes);
+app.use("/api/v1", studentRoutes);
 
 
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
