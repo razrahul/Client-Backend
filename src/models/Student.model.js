@@ -8,33 +8,39 @@ const studentSchema = new Schema({
     },
     email: {
         type: String,
-        required: true,
+        required: [true, "email are required"],
         unique: true
     },
+    phone: { type: Number },
+    image: {
+        public_id: {
+          type: String,
+        },
+        url: {
+          type: String,
+        },
+      },
     class: {
         type: String,
     },
-    // city: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'City',
-    //     required: true
-    // },
     area: {
         type: Schema.Types.ObjectId,
         ref: 'Area',
+        required: [true, "Area are required"]
     },
-    // teacher: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Teacher',
-    //     required: true
-    // },
+    subject: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Subject",
+        },
+      ],
     gender: {
         type: String,
         enum: ['Male', 'Female', 'Other'],
     },
-    age: {
-        type: Number,
-    },
+    aboutUs: { type: String },
+    chargeRate: { type: String },
+   
     ...BaseModelSchema.obj,
 });
 
