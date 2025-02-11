@@ -1,6 +1,8 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import Teacher from "../models/Teacher.model.js";
 import ErrorHandler from "../utils/errorHandler.js";
+import getDataUri from "../utils/dataUri.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export const getAllTeachers = async (req, res, next) => {
  
@@ -30,46 +32,81 @@ export const getAllTeachers = async (req, res, next) => {
   }
 };
 
+
+import mongoose from "mongoose";
+
 export const createTeacher = async (req, res, next) => {
-  const { name, cityId, areaId, aboutUs, subject, chargeRate } = req.body;
-
-  if (!name || !cityId || !areaId || !aboutUs || !subject || !chargeRate) {
-    return next(new ErrorHandler(400, "All fields are required"));
-  }
-
-  //TODO: subject and charge rate should be array , then to stringfy and pudh in aarry to db
-
   try {
+    const { name, cityId, areaId, aboutUs, subjectId, chargeRate } = req.body;
+
+    // Validate required fields
+    if (!name || !areaId || !aboutUs || !subjectId || !chargeRate) {
+      return next(new ErrorHandler(400, "All fields are required"));
+    }
+
+    // Ensure subjectId is an array and convert to ObjectId
+    const subjects = Array.isArray(subjectId)
+      ? subjectId.map((id) => mongoose.Types.ObjectId(id.trim()))
+      : subjectId.split(",").map((id) => new mongoose.Types.ObjectId(id.trim()));
+
+    let mycloud = {
+      public_id: null,
+      secure_url: null,
+    };
+
+    // If file is uploaded
+    const file = req.file;
+    if (file) {
+      // Convert file to Data URI
+      const fileUri = getDataUri(file);
+
+      // Upload image to Cloudinary inside the "teacher" folder
+      mycloud = await cloudinary.uploader.upload(fileUri.content, {
+        folder: "teacher",
+      });
+    }
+
+    // Create new teacher
     const newTeacher = await Teacher.create({
       name,
       city: cityId,
       area: areaId,
       aboutUs,
-      subject,
-      chargeRate,
+      subject: subjects, // Now an array of ObjectIds
+      chargeRate: chargeRate,
+      image: {
+        public_id: mycloud.public_id,
+        url: mycloud.secure_url,
+      },
     });
 
+    // Populate related data
     const teacher = await Teacher.findById(newTeacher._id)
-    .populate({
-      path: "city",
-      select: "name",
-      match: { isdeleted: false }, // Filter cities where isdeleted is false
-    })
-    .populate({
-      path: "area",
-      select: "name",
-      match: { isdeleted: false }, // Filter areas where isdeleted is false
-    });
+      .populate({
+        path: "city",
+        select: "name",
+        match: { isdeleted: false }, // Filter non-deleted cities
+      })
+      .populate({
+        path: "area",
+        select: "name",
+        match: { isdeleted: false }, // Filter non-deleted areas
+      })
+      .populate({
+        path: "subject",
+        select: "name", // Populate subject names
+      });
 
     res.status(201).json({
       success: true,
       message: "Teacher created successfully",
-      teacher: teacher,
+      teacher,
     });
   } catch (err) {
-    next(new ErrorHandler(500, err.message));  
+    next(new ErrorHandler(500, err.message));
   }
 };
+
 
 export const updateTeacher = async (req, res, next) => {
   const { teacherId } = req.params;
@@ -212,30 +249,32 @@ export const updateLiveTeacher = catchAsyncError(async (req, res, next) => {
 
 //find teacher by subject and area
 export const getTeacherBySubjectAndArea = catchAsyncError(async (req, res, next) => {
-  const { subject, areaId } = req.body;
+  const { subjectId, areaId } = req.body;
 
-  // if (!subject || !areaId) {
-  //   return next(new ErrorHandler(400, "Subject and areaId are required."));
-  // }
+  
 
   
 
   const teachers = await Teacher.find({
     $and:[
-      {$or: [{ subject: { $regex: new RegExp(subject, "i") } }, { area:areaId }]},
+      {$or: [{ subject: subjectId }, { area:areaId }]},
       {isdeleted: false,}
     ]
   })
-    // .populate({
-    //   path: "city",
-    //   select: "name",
-    //   match: { isdeleted: false },
-    // })
-    // .populate({
-    //   path: "area",
-    //   select: "name",
-    //   match: { isdeleted: false },
-    // });
+    .populate({
+      path: "city",
+      select: "name",
+      match: { isdeleted: false },
+    })
+    .populate({
+      path: "area",
+      select: "name",
+      match: { isdeleted: false },
+    }) 
+    .populate({
+      path: "subject",
+      select: "name",
+    });
 
   if (!teachers.length) {
     return next(new ErrorHandler(404, "No teachers found for the given subject and area."));
@@ -245,16 +284,7 @@ export const getTeacherBySubjectAndArea = catchAsyncError(async (req, res, next)
     success: true,
     message: "All teachers found successfully",
     teachers,
-    // teachers: teachers.map(teacher => ({
-    //   _id: teacher._id,
-    //   name: teacher.name,
-    //   subject: teacher.subject,
-    //   city: teacher.city?.name || "Unknown City",
-    //   area: teacher.area?.name || "Unknown Area",
-    //   aboutUs: teacher.aboutUs,
-    //   chargeRate: teacher.chargeRate,
-    //   image: teacher.image || null,
-    // })),
+    
   });
 });
 

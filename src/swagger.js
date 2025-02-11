@@ -18,6 +18,9 @@ const routes = [
   "./routes/city.route.js",
   "./routes/contactForm.route.js",
   "./routes/teacher.route.js",
+  "./routes/subject.route.js",
+  
+
   
 ];
 

@@ -45,7 +45,7 @@ import cityRoutes from "./routes/city.route.js";
 import contactFormRoutes from "./routes/contactForm.route.js";
 import teacherRoutes from "./routes/teacher.route.js";
 import studentRoutes from "./routes/student.route.js";
-
+import subjectRoutes from "./routes/subject.route.js";
 
 app.use("/api/v1", UserRouter);
 app.use("/api/v1", areaRoutes);
@@ -53,6 +53,8 @@ app.use("/api/v1", cityRoutes);
 app.use("/api/v1", contactFormRoutes);
 app.use("/api/v1", teacherRoutes);
 app.use("/api/v1", studentRoutes);
+app.use("/api/v1", subjectRoutes);
+
 
 
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
