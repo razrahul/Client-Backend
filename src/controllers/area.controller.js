@@ -92,13 +92,7 @@ export const deleteArea = async (req, res, next) => {
 //get All Areas
 export const getAllAreas = catchAsyncError(async (req, res, next) => {
 
-  const areas = await Area.find({isdeleted: false}).sort({ createdAt: 1 })
-   .populate({
-    path: "cityId",
-    select: "name",
-    match: { isdeleted: false }, // Filter cities where isdeleted is false
-    sort: { createdAt: 1 },
-  });
+  const areas = await Area.find({isdeleted: false}).sort({ createdAt: 1 });
 
 
   res.status(200).json({

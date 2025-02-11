@@ -252,20 +252,17 @@ export const getTeacherBySubjectAndArea = catchAsyncError(async (req, res, next)
   const { subjectId, areaId } = req.body;
 
   
-
+  if (!subjectId || !areaId ) {
+      return next(new ErrorHandler(400, "SubjectId ans AreaId shouls be must."));
+    }
   
 
   const teachers = await Teacher.find({
     $and:[
-      {$or: [{ subject: subjectId }, { area:areaId }]},
+      {$and: [{ subject: subjectId }, { area:areaId }]},
       {isdeleted: false,}
     ]
   })
-    .populate({
-      path: "city",
-      select: "name",
-      match: { isdeleted: false },
-    })
     .populate({
       path: "area",
       select: "name",
