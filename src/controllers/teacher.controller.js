@@ -70,6 +70,14 @@ export const createTeacher = async (req, res, next) => {
     const { name, email, phone, areaId, aboutUs, chargeRate } = req.body;
     let { subjectId } = req.body; // subjectId might be an array or string
 
+    // cheack for email
+    const existTeacher = await Teacher.findOne({email, isdeleted: false})
+
+    if(existTeacher){
+      return next(new ErrorHandler(400, "Email already exists"))
+  
+    }
+
     // Ensure all required fields are present
     if (!name || !email || !phone || !areaId || !aboutUs || !subjectId || !chargeRate) {
       return next(new ErrorHandler(400, "All fields are required"));

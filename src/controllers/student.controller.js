@@ -69,7 +69,7 @@ export const createStudent = catchAsyncError(async (req, res, next) => {
     const { name, email, phone, className, areaId, gender, subjectId, aboutUs, chargeRate } = req.body;
 
     // Check if email already exists
-    const existingStudent = await Student.findOne({ email });
+    const existingStudent = await Student.findOne({ email, isdeleted: false });
     if (existingStudent) {
       return next(new ErrorHandler(400, "Email already exists"));
     }
