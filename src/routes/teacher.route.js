@@ -7,25 +7,39 @@ import {
     getTeacherById,
     updateLiveTeacher,
     getTeacherBySubjectAndArea,
-    FindTeacherBySubjectAndArea
+    FindTeacherBySubjectAndArea,
+    getTeacherLiveTrue
 } from "../controllers/teacher.controller.js";
 
+import singleUpload from "../middlewares/multer.js";
+
 const router = express.Router();
+//GEt all teacher
 router.get("/getTeachers", getAllTeachers);
-router.post("/createTeacher", createTeacher);
-router.put("/updateTeacher/:teacherId", updateTeacher);
+
+//Get All Live Teacher
+router.get("/teacher/live", getTeacherLiveTrue);
+
+//create area
+router.route("/createTeacher").post(singleUpload, createTeacher);
+
+//update teacher
+router.put("/updateTeacher/:teacherId", singleUpload, updateTeacher);
+// router.put("/updateTeacher/:teacherId", updateTeacher);
+
+//delete teacher
 router.delete("/deleteTeacher/:teacherId", deleteTeacher);
 
 //get teacher by id
 router.get("/getTeacherById/:teacherId", getTeacherById);
 
 //update live
-router.patch("/updateLiveTeacher/:teacherId", updateLiveTeacher);
+router.patch("/teacher/updatelive/:teacherId", updateLiveTeacher);
 
 //find teacher by subject and area
-router.get("/admin/teacher", getTeacherBySubjectAndArea);
+router.post("/admin/teacher", getTeacherBySubjectAndArea);
 
 //find teacher by subject and area
-router.get("/findteacher", FindTeacherBySubjectAndArea);
+// router.post("/findteacher", FindTeacherBySubjectAndArea);
 
 export default router;

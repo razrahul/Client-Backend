@@ -3,21 +3,23 @@ import Teacher from "../models/Teacher.model.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import getDataUri from "../utils/dataUri.js";
 import { v2 as cloudinary } from "cloudinary";
+import mongoose from "mongoose";
 
 export const getAllTeachers = async (req, res, next) => {
  
   try {
     const teachers = await Teacher.find({isdeleted:false}).sort({createdAt: 1})
     .populate({
-      path: "city",
-      select: "name",
-      match: { isdeleted: false }, // Filter cities where isdeleted is false
-    })
-    .populate({
       path: "area",
       select: "name",
       match: { isdeleted: false }, // Filter areas where isdeleted is false
+    })
+    .populate({
+      path: "subject",
+      select: "name", // Populate subject names
+      match: { isdeleted: false},
     });
+    
     if (!teachers.length) {
       return next(new ErrorHandler(404, "No teachers found for the given city and area."));
     }
@@ -32,35 +34,65 @@ export const getAllTeachers = async (req, res, next) => {
   }
 };
 
+//Get All live teacher
+export const getTeacherLiveTrue = catchAsyncError( async (req, res, next) => {
+ 
+    const teachers = await Teacher.find({ isLive: true, isdeleted: false }).sort({createdAt: 1})
+      .populate({
+        path: "area",
+        select: "name",
+        match: { isdeleted: false },
+      })
+      .populate({
+        path: "subject",
+        select: "name",
+        match: { isdeleted: false },
+      });
 
-import mongoose from "mongoose";
+    if (!teachers.length) {
+      return next(new ErrorHandler(404, "No live teachers found."));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "All live teachers found successfully",
+      teachers,
+    });
+  
+})
+
+
+
+
 
 export const createTeacher = async (req, res, next) => {
   try {
-    const { name, cityId, areaId, aboutUs, subjectId, chargeRate } = req.body;
+    const { name, email, phone, areaId, aboutUs, chargeRate } = req.body;
+    let { subjectId } = req.body; // subjectId might be an array or string
 
-    // Validate required fields
-    if (!name || !areaId || !aboutUs || !subjectId || !chargeRate) {
+    // Ensure all required fields are present
+    if (!name || !email || !phone || !areaId || !aboutUs || !subjectId || !chargeRate) {
       return next(new ErrorHandler(400, "All fields are required"));
     }
 
-    // Ensure subjectId is an array and convert to ObjectId
-    const subjects = Array.isArray(subjectId)
-      ? subjectId.map((id) => mongoose.Types.ObjectId(id.trim()))
-      : subjectId.split(",").map((id) => new mongoose.Types.ObjectId(id.trim()));
+    // Convert subjectId into an array of ObjectIds
+    let subjects = [];
+    if (Array.isArray(subjectId)) {
+      subjects = subjectId.map((id) => new mongoose.Types.ObjectId(id.trim()));
+    } else if (typeof subjectId === "string" && subjectId.length > 0) {
+      subjects = subjectId.split(",").map((id) => new mongoose.Types.ObjectId(id.trim()));
+    } else {
+      return next(new ErrorHandler(400, "Invalid subjectId format"));
+    }
 
     let mycloud = {
       public_id: null,
       secure_url: null,
     };
 
-    // If file is uploaded
-    const file = req.file;
-    if (file) {
-      // Convert file to Data URI
-      const fileUri = getDataUri(file);
-
-      // Upload image to Cloudinary inside the "teacher" folder
+    // Handle file upload
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
       mycloud = await cloudinary.uploader.upload(fileUri.content, {
         folder: "teacher",
       });
@@ -69,11 +101,12 @@ export const createTeacher = async (req, res, next) => {
     // Create new teacher
     const newTeacher = await Teacher.create({
       name,
-      city: cityId,
+      email,
+      phone,
       area: areaId,
       aboutUs,
       subject: subjects, // Now an array of ObjectIds
-      chargeRate: chargeRate,
+      chargeRate,
       image: {
         public_id: mycloud.public_id,
         url: mycloud.secure_url,
@@ -83,18 +116,13 @@ export const createTeacher = async (req, res, next) => {
     // Populate related data
     const teacher = await Teacher.findById(newTeacher._id)
       .populate({
-        path: "city",
-        select: "name",
-        match: { isdeleted: false }, // Filter non-deleted cities
-      })
-      .populate({
         path: "area",
         select: "name",
-        match: { isdeleted: false }, // Filter non-deleted areas
+        match: { isdeleted: false },
       })
       .populate({
         path: "subject",
-        select: "name", // Populate subject names
+        select: "name",
       });
 
     res.status(201).json({
@@ -108,37 +136,75 @@ export const createTeacher = async (req, res, next) => {
 };
 
 
-export const updateTeacher = async (req, res, next) => {
-  const { teacherId } = req.params;
-  const { name, cityId, areaId, aboutUs, subject, chargeRate } = req.body;
 
+export const updateTeacher = async (req, res, next) => {
   try {
-    const updatedTeacher = await Teacher.findById({_id:teacherId, isdeleted:false});
+    const { teacherId } = req.params;
+    const { name, email, phone, areaId, aboutUs, subjectId, chargeRate } = req.body;
+
+    // Find the teacher and ensure they are not deleted
+    const updatedTeacher = await Teacher.findOne({ _id: teacherId, isdeleted: false });
 
     if (!updatedTeacher) {
       return next(new ErrorHandler(404, "Teacher not found"));
     }
 
+    // Update fields if provided
     updatedTeacher.name = name || updatedTeacher.name;
-    updatedTeacher.city = cityId || updatedTeacher.city;
+    updatedTeacher.email = email || updatedTeacher.email;
+    updatedTeacher.phone = phone || updatedTeacher.phone;
     updatedTeacher.area = areaId || updatedTeacher.area;
     updatedTeacher.aboutUs = aboutUs || updatedTeacher.aboutUs;
-    updatedTeacher.subject = subject || updatedTeacher.subject;
     updatedTeacher.chargeRate = chargeRate || updatedTeacher.chargeRate;
-    
-    const teacher = await updatedTeacher.save();
 
-    const teacherData = await Teacher.findById(teacher._id)
-    .populate({
-      path: "city",
-      select: "name",
-      match: { isdeleted: false }, // Filter cities where isdeleted is false
-    })
-    .populate({
-      path: "area",
-      select: "name",
-      match: { isdeleted: false }, // Filter areas where isdeleted is false
-    });
+    // Handle multiple subjectId values
+    if (subjectId) {
+      if (Array.isArray(subjectId)) {
+        updatedTeacher.subject = subjectId.map((id) => new mongoose.Types.ObjectId(id.trim()));
+      } else if (typeof subjectId === "string") {
+        updatedTeacher.subject = subjectId.split(",").map((id) => new mongoose.Types.ObjectId(id.trim()));
+      }
+    }
+
+    // Handle Image Upload (if file is provided)
+    let mycloud = updatedTeacher.image; // Keep existing image by default
+
+    if (req.file) {
+      // Convert file to Data URI
+      const fileUri = getDataUri(req.file);
+
+      // Delete previous image from Cloudinary (if exists)
+      if (updatedTeacher.image?.public_id) {
+        await cloudinary.uploader.destroy(updatedTeacher.image.public_id);
+      }
+
+      // Upload new image to Cloudinary
+      mycloud = await cloudinary.uploader.upload(fileUri.content, {
+        folder: "teacher",
+      });
+
+      updatedTeacher.image = {
+        public_id: mycloud.public_id,
+        url: mycloud.secure_url,
+      };
+    }
+
+    // Save updated teacher data
+    await updatedTeacher.save();
+
+    // Fetch updated teacher data with populated fields
+    const teacherData = await Teacher.findById(updatedTeacher._id)
+      .populate({
+        path: "subject",
+        select: "name",
+        match: { isdeleted: false },
+      })
+      .populate({
+        path: "area",
+        select: "name",
+        match: { isdeleted: false },
+      });
+
     res.status(200).json({
       success: true,
       message: "Teacher updated successfully",
@@ -149,13 +215,15 @@ export const updateTeacher = async (req, res, next) => {
   }
 };
 
+
+//delete teacher
 export const deleteTeacher = async (req, res, next) => {
   const { teacherId } = req.params;
 
   try {
     const teacher = await Teacher.findById({_id:teacherId, isdeleted:false})
     .populate({
-      path: "city",
+      path: "subject",
       select: "name",
       match: { isdeleted: false }, // Filter cities where isdeleted is false
     })
@@ -190,7 +258,7 @@ export const getTeacherById = catchAsyncError(async (req, res, next) => {
 
   const teacher = await Teacher.findById({_id:teacherId, isdeleted:false})
   .populate({
-      path: "city",
+      path: "subject",
       select: "name",
       match: { isdeleted: false }, // Filter cities where isdeleted is false
     })
@@ -212,7 +280,7 @@ export const getTeacherById = catchAsyncError(async (req, res, next) => {
 
 });
 
-//update Live
+//update Live status
 
 export const updateLiveTeacher = catchAsyncError(async (req, res, next) => {
 
@@ -220,7 +288,7 @@ export const updateLiveTeacher = catchAsyncError(async (req, res, next) => {
 
   const teacher = await Teacher.findById({_id:teacherId, isdeleted:false})
   .populate({
-      path: "city",
+      path: "subject",
       select: "name",
       match: { isdeleted: false }, // Filter cities where isdeleted is false
     })
@@ -240,7 +308,7 @@ export const updateLiveTeacher = catchAsyncError(async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Teacher updated successfully",
+      message: "Teacher updated Live successfully",
       teacher,
     });
 

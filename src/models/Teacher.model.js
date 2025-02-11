@@ -3,6 +3,8 @@ import BaseModelSchema from "./Base.model.js";
 
 const TeacherSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone: { type: Number },
   image: {
     public_id: {
       type: String,
@@ -11,7 +13,6 @@ const TeacherSchema = new mongoose.Schema({
       type: String,
     },
   },
-  city: { type: Schema.Types.ObjectId, ref: "City",  },
   area: { type: Schema.Types.ObjectId, ref: "Area", required: true },
   aboutUs: { type: String },
   subject: [
@@ -20,7 +21,7 @@ const TeacherSchema = new mongoose.Schema({
       ref: "Subject",
     },
   ],
-  chargeRate: { type: Number, required: true },
+  chargeRate: { type: String },
   ...BaseModelSchema.obj, // Inherit from BaseModel
 });
 
