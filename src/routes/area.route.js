@@ -3,7 +3,7 @@ import { createArea, deleteArea, getAreasByCityId, updateArea, getAllAreas, getA
 
 
 const router =express.Router();
-router.get('/getAreasByCityId',getAreasByCityId);
+// router.get('/getAreasByCityId',getAreasByCityId);
 router.post('/createArea',createArea);
 router.put('/updateArea/:areaId', updateArea);
 router.delete('/deleteArea/:areaId', deleteArea);
@@ -18,6 +18,6 @@ router.get('/getAreaById/:areaId',getAreaById);
 router.patch('/updateLiveStatus/:id', updateLiveStatus);
 
 //get Area by cityId
-router.get('/getAreaByCityId/:cityId', getAreaByCityId);
+// router.get('/getAreaByCityId/:cityId', getAreaByCityId);
 
 export default router;

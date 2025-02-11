@@ -1,6 +1,8 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import Area from "../models/Area.model.js";
 import  ErrorHandler from "../utils/errorHandler.js"
+
+//no use
 export const getAreasByCityId = async (req, res, next) => {
   const { showDeleted } = req.query;  
   const { cityId } = req.params;
@@ -14,7 +16,7 @@ export const getAreasByCityId = async (req, res, next) => {
     next(new ErrorHandler(500, err.message));  
   }
 };
-
+//create Area
 export const createArea = async (req, res, next) => {
   const { name } = req.body;
   
@@ -107,13 +109,7 @@ export const getAreaById = catchAsyncError(async (req, res, next) => {
   const { areaId  } = req.params;
 
   const area = await Area.findById({_id:areaId, isdeleted: false})
-  .populate({
-    path: "cityId",
-    select: "name",
-    match: { isdeleted: false }, // Filter cities where isdeleted is false
-    sort: { createdAt: 1 },
-  });
-
+  
   if (!area) return next(new ErrorHandler(404, "Area not found"));
 
   res.status(200).json({
