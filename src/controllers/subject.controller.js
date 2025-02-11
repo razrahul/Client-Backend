@@ -34,9 +34,22 @@ export const getAllSubject = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "All Subject Found",
     subjects,
   });
 });
+
+// get All live subject
+export const getSubjectLiveTrue = catchAsyncError(async (req, res, next) => {
+  const subjects = await Subject.find({isLive: true, isdeleted: false });
+
+  res.status(200).json({
+    success: true,
+    message: "All Live Subject Found",
+    subjects,
+  });
+});
+
 //get Subject by id
 export const getSubjectById = catchAsyncError(async (req, res, next) => {
 
@@ -93,5 +106,22 @@ export const deleteSubject = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Subject marked as deleted"
+  });
+});
+
+//update live status
+export const updateLiveStatus = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const subject = await Subject.findOne({_id:id, isdeleted: false});
+
+  if (!subject) return next(new ErrorHandler(404, "Subject not found"));
+
+  subject.isLive = !subject.isLive;
+  await subject.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Subject live status updated",
+    subject,
   });
 });

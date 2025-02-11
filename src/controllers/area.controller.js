@@ -99,6 +99,7 @@ export const getAllAreas = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message:"All Area Found",
     areas,
   });
 });
@@ -167,6 +168,20 @@ export const getAreaByCityId = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "Area found by city",
     area: { ...area.toObject(), cityId: singleCity }, // Override cityId with only one city
+  });
+});
+
+
+// Get All Area live true
+
+export const getAreaLiveTrue = catchAsyncError(async (req, res, next) => {
+
+  const areas = await Area.find({ isLive: true, isdeleted: false }).sort({ createdAt: 1 });
+
+  res.status(200).json({
+    success: true,
+    message:"All Live Area",
+    areas,
   });
 });
 

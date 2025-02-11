@@ -1,5 +1,5 @@
 import express from 'express'
-import { createArea, deleteArea, getAreasByCityId, updateArea, getAllAreas, getAreaById, updateLiveStatus, getAreaByCityId } from '../controllers/area.controller.js';
+import { createArea, deleteArea, getAreasByCityId, updateArea, getAllAreas, getAreaById, updateLiveStatus, getAreaByCityId, getAreaLiveTrue } from '../controllers/area.controller.js';
 
 
 const router =express.Router();
@@ -11,11 +11,14 @@ router.delete('/deleteArea/:areaId', deleteArea);
 //get All Area
 router.get('/getAreas',getAllAreas);
 
+//get All Area Live
+router.get('/areas/live', getAreaLiveTrue)
+
 //get Area by Id
 router.get('/getAreaById/:areaId',getAreaById);
 
 //update Live status
-router.patch('/updateLiveStatus/:id', updateLiveStatus);
+router.patch('/updateLiveStatus/area/:id', updateLiveStatus);
 
 //get Area by cityId
 // router.get('/getAreaByCityId/:cityId', getAreaByCityId);

@@ -5,7 +5,9 @@ import {
     getAllSubject,
     getSubjectById,
     updateSubject,
-    deleteSubject
+    deleteSubject,
+    getSubjectLiveTrue,
+    updateLiveStatus
 } from "../controllers/subject.controller.js"
 
 const router = express.Router();
@@ -15,6 +17,9 @@ router.route("/subject").post(createSubject);
 //get all subject
 router.route("/subject").get(getAllSubject);
 
+//get All Live subjects
+router.route("/subject/live").get(getSubjectLiveTrue);
+
 //get subject by id
 router.route("/subject/:id").get(getSubjectById);
 
@@ -23,5 +28,8 @@ router.route("/subject/:Id").put(updateSubject);
 
 //delete subject
 router.route("/subject/:subjectId").delete(deleteSubject);
+
+//update live status
+router.route("/subject/updatelive/:id").patch(updateLiveStatus);
 
 export default router;
