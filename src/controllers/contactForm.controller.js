@@ -50,9 +50,9 @@ export const submitContactForm = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      // message: "Contact form submitted successfully",
-      // contactForm: newContactForm,
-      response
+      message: "Contact form submitted successfully",
+      contactForm: newContactForm,
+      // response
     });
   } catch (err) {
     next(new ErrorHandler(500, err.message));  
