@@ -31,17 +31,17 @@ export const submitContactForm = async (req, res, next) => {
   
 
   try {
-    // const newContactForm = await ContactForm.create({
-    //   name,
-    //   number,
-    //   whatsappNumber,
-    //   email,
-    //   role,
-    //   class: className,
-    //   subjectList,
-    //   timeslot,
-    //   feeRange,
-    // });
+    const newContactForm = await ContactForm.create({
+      name,
+      number,
+      whatsappNumber,
+      email,
+      role,
+      class: className,
+      subjectList,
+      timeslot,
+      feeRange,
+    });
     const mobile = number;
 
     const message = `Hello ${name},\n\nThank you for reaching out to us. We have received your message and will get back to you as soon as possible.\n\nBest regards,\nTechTimes Team`;
