@@ -61,6 +61,7 @@ import teacherRoutes from "./routes/teacher.route.js";
 import studentRoutes from "./routes/student.route.js";
 import subjectRoutes from "./routes/subject.route.js";
 import FaqRoutes from "./routes/Faq.route.js";
+import FeedbackRoutes  from "./routes/feedback.routes.js";
 
 app.use("/api/v1", UserRouter);
 app.use("/api/v1", areaRoutes);
@@ -70,6 +71,7 @@ app.use("/api/v1", teacherRoutes);
 app.use("/api/v1", studentRoutes);
 app.use("/api/v1", subjectRoutes);
 app.use("/api/v1", FaqRoutes);
+app.use("/api/v1", FeedbackRoutes);
 
 
 
