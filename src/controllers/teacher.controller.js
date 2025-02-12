@@ -325,7 +325,7 @@ export const updateLiveTeacher = catchAsyncError(async (req, res, next) => {
 
 //find teacher by subject and area
 export const getTeacherBySubjectAndArea = catchAsyncError(async (req, res, next) => {
-  const { subjectId, areaId } = req.body;
+  const { subjectId, areaId } = req.query;
 
   
   if (!subjectId || !areaId ) {

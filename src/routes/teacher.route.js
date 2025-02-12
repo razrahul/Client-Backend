@@ -37,7 +37,7 @@ router.get("/getTeacherById/:teacherId", getTeacherById);
 router.patch("/teacher/updatelive/:teacherId", updateLiveTeacher);
 
 //find teacher by subject and area
-router.post("/admin/teacher", getTeacherBySubjectAndArea);
+router.get("/admin/teacher", getTeacherBySubjectAndArea);
 
 //find teacher by subject and area
 // router.post("/findteacher", FindTeacherBySubjectAndArea);

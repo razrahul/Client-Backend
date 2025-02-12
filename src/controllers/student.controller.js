@@ -296,7 +296,7 @@ export const updateStudent = catchAsyncError(async (req, res, next) => {
 
   // find Student areaid and subjectid
   export const getStudentBySubjectAndArea = catchAsyncError(async (req, res, next) => {
-    const { subjectId, areaId } = req.body;
+    const { subjectId, areaId } = req.query;
   
     if (!subjectId || !areaId) {
       return next(new ErrorHandler(400, "SubjectId and AreaId must be provided."));

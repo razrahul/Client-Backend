@@ -37,7 +37,7 @@ const ContactFormSchema = new mongoose.Schema({
       "Please enter a valid email address",
     ],
   },
-  role: { type: Number, required: true },
+  role: { type: String, required: true },
   class: { type: String, required: true },
   subjectList: [{ type: String }],
   timeslot: { type: String, required: true },

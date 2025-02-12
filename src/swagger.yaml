@@ -1,27 +1,31 @@
 openapi: 3.0.0
 info:
-  title: Techtime Client-Backend
-  description: |-
-    This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
+  title: Home Tuition Backend API
+  description: |
+    This is the backend API for the **Home Tuition Platform**, designed to manage tutors, students, and class schedules efficiently. 
     
-    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
-    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
-
-    _If you're looking for the Swagger 2.0/OAS 2.0 version of Petstore, then click [here](https://editor.swagger.io/?url=https://petstore.swagger.io/v2/swagger.yaml). Alternatively, you can load via the `Edit > Load Petstore OAS 2.0` menu option!_
+    The API provides endpoints for user authentication, tutor registration, student enrollment, and class management. 
+    
+    We encourage contributions to improve and extend the API. Feel free to explore, suggest changes, or enhance the features.
     
     Some useful links:
-    # - [The  Blog Store repository](https://github.com/razrahul/Client-Backend)
-    # - [Frotend Url](https://contact-fromdata.netlify.app)
-    termsOfService: http://swagger.io/terms/
+    - [Backend Repository](https://github.com/razrahul/Client-Backend)
+    - [Frontend UI](https://contact-fromdata.netlify.app)
+    
+  termsOfService: http://swagger.io/terms/
   contact:
+    name: Rahul Kumar
     email: razrahuleee@gmail.com
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
+
 servers:
   - url: https://client-backend-ev0b.onrender.com/api/v1
+    description: Production Server
   - url: http://localhost:5500/api/v1
+    description: Local Development Server
 components:
   securitySchemes:
     noauthAuth:
@@ -34,20 +38,23 @@ tags:
   - name: area
 paths:
   /admin/teacher:
-    post:
+    get:
       tags:
         - Teacher
       summary: find techer subjrcyt and areaid
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              example:
-                areaId: 67a5e51b3668aea19a74fcc8
-                subjectId: 67aabf39a5089d3abffc0e21
       security:
         - noauthAuth: []
+      parameters:
+        - name: areaId
+          in: query
+          schema:
+            type: string
+          example: 67ab5744788714c671eda8e3
+        - name: subjectId
+          in: query
+          schema:
+            type: string
+          example: 67aabf39a5089d3abffc0e21
       responses:
         '200':
           description: Successful response
@@ -187,6 +194,30 @@ paths:
       summary: update live teacher
       requestBody:
         content: {}
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /getTeacherById/67ab610005dbcf58f6ab4807:
+    get:
+      tags:
+        - Teacher
+      summary: GEt Teacher By Id
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /deleteTeacher/67ab619470b80dbb551f9195:
+    delete:
+      tags:
+        - Teacher
+      summary: delete Teacher
       security:
         - noauthAuth: []
       responses:
@@ -340,20 +371,23 @@ paths:
           content:
             application/json: {}
   /admin/student:
-    post:
+    get:
       tags:
         - Student
       summary: find student by area and subject
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              example:
-                subjectId: 67aabf07a5089d3abffc0e1e
-                areaId: 67ab5744788714c671eda8e3
       security:
         - noauthAuth: []
+      parameters:
+        - name: subjectId
+          in: query
+          schema:
+            type: string
+          example: 67aabf07a5089d3abffc0e1e
+        - name: areaId
+          in: query
+          schema:
+            type: string
+          example: 67ab5744788714c671eda8e3
       responses:
         '200':
           description: Successful response
@@ -415,6 +449,47 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /subject/67aabf39a5089d3abffc0e21:
+    get:
+      tags:
+        - Subject
+      summary: Get Subject By Id
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - Subject
+      summary: update Subject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Social Science
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Subject
+      summary: Delete Subject
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
   /updateLiveStatus/area/67ab7fc23648ce7accb29b9a:
     patch:
       tags:
@@ -446,6 +521,68 @@ paths:
       tags:
         - area
       summary: get All Area
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /getAreaById/67ab5744788714c671eda8e3:
+    get:
+      tags:
+        - area
+      summary: Get Area By Id
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /createArea:
+    post:
+      tags:
+        - area
+      summary: Create Area
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Benipur
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /updateArea/67ab7fc23648ce7accb29b9a:
+    put:
+      tags:
+        - area
+      summary: update Area
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Darbhanga
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /deleteArea/67ab7fc23648ce7accb29b9a:
+    delete:
+      tags:
+        - area
+      summary: delete Area
       security:
         - noauthAuth: []
       responses:

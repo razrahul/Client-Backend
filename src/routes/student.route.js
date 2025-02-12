@@ -36,7 +36,7 @@ router.route("/student/:Id").delete(deleteStudent);
 router.route("/student/updatelive/:Id").patch(updateStudent);
 
 //find student areaid and subjectid
-router.route("/admin/student").post(getStudentBySubjectAndArea);
+router.route("/admin/student").get(getStudentBySubjectAndArea);
 
 
 
