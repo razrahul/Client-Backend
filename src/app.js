@@ -33,8 +33,8 @@ const app = express();
 app.use(morganMiddleware);
 
 const corsOptions = {
-  origin: [process.env.LOCALHOST_URL, process.env.FRONTEND_URL, process.env.FRONTEND_URL1, process.env.FRONTEND_URL2], // Allows all origins
-  methods: ["GET","POST","PUT","DELETE"],
+  origin: [process.env.LOCALHOST_URL, process.env.LOCALHOST_URL1, process.env.FRONTEND_URL, process.env.FRONTEND_URL1, process.env.FRONTEND_URL2], // Allows all origins
+  methods: ["GET","POST","PUT","PATCH","DELETE"],
   credentials: true, // Allows cookies and other credentials to be sent with the request
 };
 
