@@ -36,6 +36,9 @@ tags:
   - name: Student
   - name: Subject
   - name: area
+  - name: Faq
+  - name: Contact-from
+  - name: Feedback
 paths:
   /admin/teacher:
     get:
@@ -704,6 +707,337 @@ paths:
           schema:
             type: string
           required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /faq:
+    post:
+      tags:
+        - Faq
+      summary: create faq
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                question: What  is Your 2nd Name ?
+                answer: My Name 2nd is razrahul
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Faq
+      summary: Get All Faq
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /faq/live:
+    get:
+      tags:
+        - Faq
+      summary: get All live Faq
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /faq/{id}:
+    get:
+      tags:
+        - Faq
+      summary: Get Faq By Id
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67accb6d7c9c9390c667ea37
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - Faq
+      summary: update Faq
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                question: Name ?
+                answer: razrahul
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67accb6d7c9c9390c667ea37
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Faq
+      summary: delete Faq
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67accb6d7c9c9390c667ea37
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  //faq/updatelive/{id}:
+    patch:
+      tags:
+        - Faq
+      summary: update live status
+      requestBody:
+        content: {}
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67accb6d7c9c9390c667ea37
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /submitContactForm:
+    post:
+      tags:
+        - Contact-from
+      summary: Create Form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Sajan Kumar
+                number: '9708712422'
+                whatsappNumber: '9708712422'
+                email: sajan@gmail.com
+                role: Teacher
+                className: 12th
+                subjectList: 'math, English, Social Science '
+                timeslot: 10AM-12AM
+                feeRange: 200-300
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /getAllContactForms:
+    get:
+      tags:
+        - Contact-from
+      summary: Get All From Data (Sorting new in 1st)
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /updateContactForm/{formId}:
+    put:
+      tags:
+        - Contact-from
+      summary: update Contact Form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Sajan Kumar
+                number: '9708712422'
+                whatsappNumber: '9708712422'
+                email: sajan@gmail.com
+                role: Teacher
+                className: 12th
+                subjectList: 'History, English, Social Science '
+                timeslot: 10AM-12AM
+                feeRange: 200-300
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: formId
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67acecf10cbd597a34e0103e
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /getContactFormById/{formId}:
+    get:
+      tags:
+        - Contact-from
+      summary: Get From data By Id
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: formId
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67acecf10cbd597a34e0103e
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /updateLivefrom/{formId}:
+    patch:
+      tags:
+        - Contact-from
+      summary: update From Live Status
+      requestBody:
+        content: {}
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: formId
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67acecf10cbd597a34e0103e
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /updateIncomplete/{formId}:
+    patch:
+      tags:
+        - Contact-from
+      summary: update in complete Status
+      requestBody:
+        content: {}
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: formId
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67acecf10cbd597a34e0103e
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /deleteContactForm/{formId}:
+    delete:
+      tags:
+        - Contact-from
+      summary: delete From data
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: formId
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67acecf10cbd597a34e0103e
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /feedback:
+    post:
+      tags:
+        - Feedback
+      summary: create Feedback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                userId: 67abaf1d10ba9f78da741fab
+                feedback: i Am Good Testing Chal rha h
+                rating: '3'
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Feedback
+      summary: get All Feedback
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /feedback/{id}:
+    get:
+      tags:
+        - Feedback
+      summary: get feedback by id
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67ab619470b80dbb551f9195
       responses:
         '200':
           description: Successful response
