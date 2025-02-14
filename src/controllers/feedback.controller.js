@@ -36,7 +36,7 @@ export const createFeedback = catchAsyncError(async (req, res, next) => {
 });
 //get all feedbacks
 export const getAllFeedbacks = catchAsyncError(async (req, res, next) => {
-  const feedbacks = await Feedback.find().sort({ createdAt: -1})
+  const feedbacks = await Feedback.find({ isdeleted:false }).sort({ createdAt: -1})
   .populate("user")
   ;
   res.status(200).json({
@@ -46,20 +46,101 @@ export const getAllFeedbacks = catchAsyncError(async (req, res, next) => {
   });
 });
 
+//get All Live Feedbacks
+export const getAllLiveFeedbacks = catchAsyncError(async (req, res, next) => {
+
+  const feedbacks = await Feedback.find({ isdeleted:false, isLive:true }).sort({ createdAt: -1})
+  .populate("user")
+  ;
+  res.status(200).json({
+    success: true,
+    message:"All Live Feedback Fetch Successfull",
+    feedbacks,
+  });
+});
+
 //get feedback by id
 export const getByIdFeedback = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   // Find feedback and populate user details
-  const feedbacks = await Feedback.find({ user: id }).populate("user");
+  const feedbacks = await Feedback.findById({ _id: id, isdeleted:false }).populate("user");
 
-  if (!feedbacks.length) {
-    return res.status(404).json({ message: "No feedback found for this user" });
+  if (!feedbacks) {
+    return next(new ErrorHandler(404, "Feedback not found" ));
   }
 
   res.status(200).json({
     success: true,
     message: "Feedbacks fetched successfully",
     feedbacks,
+  });
+});
+
+
+//update feedback
+export const updateFeedback = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const { feedback, rating } = req.body;
+
+  const updatedFeedback = await Feedback.findByIdAndUpdate(
+    {_id:id, isdeleted:false },
+    { feedback, rating },
+    { new: true }
+  );
+
+  if (!updatedFeedback) {
+    return next(new ErrorHandler("Feedback not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Feedback updated successfully",
+    feedback: updatedFeedback,
+  });
+});
+
+//delete feedback
+export const deleteFeedback = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+
+  const deletedFeedback = await Feedback.findByIdAndUpdate(
+    id,
+    { isdeleted: true },
+    { new: true }
+  );
+
+  if (!deletedFeedback) {
+    return next(new ErrorHandler(404, "Feedback not found" ));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Feedback deleted successfully",
+    feedback: deletedFeedback,
+  });
+});
+
+//update live status
+export const updateLiveStatus = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+
+  // Use findOne instead of find to get a single document
+  const feedback = await Feedback.findById({ _id: id, isdeleted: false });
+
+  if (!feedback) {
+    return next(new ErrorHandler(404, "Feedback not found" ));
+  }
+
+  // Toggle isLive
+  feedback.isLive = !feedback.isLive;
+
+  // Save the updated document
+  await feedback.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Live status updated successfully",
+    feedback,
   });
 });

@@ -1,5 +1,7 @@
 import { Schema as _Schema, model } from 'mongoose';
 
+import BaseModelSchema from './Base.model.js';
+
 const Schema = _Schema;
 
 const FeedbackSchema = new Schema({
@@ -21,8 +23,10 @@ const FeedbackSchema = new Schema({
         type: Number,
         min: 1,
         max: 5
-    }
-}, { timestamps: true });
+    },
+
+    ...BaseModelSchema.obj,
+}, );
 
 const Feedback = model('Feedback', FeedbackSchema);
 
