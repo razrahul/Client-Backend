@@ -682,13 +682,19 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /deleteArea/67ab7fc23648ce7accb29b9a:
+  /deleteArea/{areaId}:
     delete:
       tags:
         - area
       summary: delete Area
       security:
         - noauthAuth: []
+      parameters:
+        - name: areaId
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Successful response
@@ -1037,7 +1043,84 @@ paths:
           schema:
             type: string
           required: true
-          example: 67ab619470b80dbb551f9195
+          example: 67af4df907de8fce01150247
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - Feedback
+      summary: update Feedback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                feedback: it is good devlope by devloper Rahul....update testing
+                rating: '5'
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67af4e2f07de8fce0115024b
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Feedback
+      summary: delete feedback
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67af4e2f07de8fce0115024b
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /feedback/live:
+    get:
+      tags:
+        - Feedback
+      summary: get All live Feedback
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /feedback/updatelive/{id}:
+    patch:
+      tags:
+        - Feedback
+      summary: update live status
+      requestBody:
+        content: {}
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67af4e2f07de8fce0115024b
       responses:
         '200':
           description: Successful response
