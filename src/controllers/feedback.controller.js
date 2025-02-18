@@ -14,10 +14,21 @@ export const createFeedback = catchAsyncError(async (req, res, next) => {
   const isStudent = await Student.findById(userId);
 
   if (!isTeacher && !isStudent) {
-    return next(new ErrorHandler("Invalid user ID", 400));
+    return next(new ErrorHandler(400, "Invalid user ID" ));
   }
 
   const userType = isTeacher ? "Teacher" : "Student";
+
+  //2nd method
+  // let userType = "";
+
+  // if (isTeacher) {
+  //   userType = "Teacher";
+  // } else if (isStudent) {
+  //   userType = "Student";
+  // } else {
+  //   return next(new ErrorHandler(400, "Invalid user ID"));
+  // }
 
   // Save feedback
   const newFeedback = new Feedback({
@@ -90,7 +101,7 @@ export const updateFeedback = catchAsyncError(async (req, res, next) => {
   );
 
   if (!updatedFeedback) {
-    return next(new ErrorHandler("Feedback not found", 404));
+    return next(new ErrorHandler(404,"Feedback not found" ));
   }
 
   res.status(200).json({
