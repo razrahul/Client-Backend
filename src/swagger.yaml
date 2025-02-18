@@ -39,6 +39,7 @@ tags:
   - name: Faq
   - name: Contact-from
   - name: Feedback
+  - name: Vacancy
 paths:
   /admin/teacher:
     get:
@@ -1121,6 +1122,135 @@ paths:
             type: string
           required: true
           example: 67af4e2f07de8fce0115024b
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /vacancy:
+    post:
+      tags:
+        - Vacancy
+      summary: create Vacancy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                studentName: Rahul Kumar
+                areaId: 67ae207e48507b0a38e78c34
+                subjectId: 67accec10bf26555214d2155
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Vacancy
+      summary: get All vacancies
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /vacancy/live:
+    get:
+      tags:
+        - Vacancy
+      summary: get All Live vacancies
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /vacancy/{id}:
+    get:
+      tags:
+        - Vacancy
+      summary: get vacancy By id
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67b4ba4a35fc2c52b701d3f1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - Vacancy
+      summary: update Vacancy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                studentName: Rajan Kumar
+                areaId: 67ae207e48507b0a38e78c34
+                subjectId: 67acd67a0bf26555214d2214
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67b4ba4a35fc2c52b701d3f1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Vacancy
+      summary: delete Vacancy
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67b4ba4a35fc2c52b701d3f1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /vacancy/updatelive/{id}:
+    patch:
+      tags:
+        - Vacancy
+      summary: update isLive Status
+      requestBody:
+        content: {}
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 67b4c1495d48856585823757
       responses:
         '200':
           description: Successful response
