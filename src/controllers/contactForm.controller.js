@@ -64,7 +64,7 @@ export const updateContactForm = async (req, res, next) => {
   const { name, number, whatsappNumber, email, role, class: className, subjectList, timeslot, feeRange } = req.body;
 
   try {
-    const updatedContactForm = await ContactForm.findById({_id:formId, isdeleted: false});
+    const updatedContactForm = await ContactForm.findOne({_id:formId, isdeleted: false});
 
     if (!updatedContactForm) {
       return next(new ErrorHandler(404, "Contact form not found"));
@@ -96,7 +96,7 @@ export const deleteContactForm = async (req, res, next) => {
   const { formId } = req.params;
 
   try {
-    const contactForm = await ContactForm.findById({_id:formId, isdeleted: false});
+    const contactForm = await ContactForm.findOne({_id:formId, isdeleted: false});
 
     if (!contactForm) {
       return next(new ErrorHandler(404, "Contact form not found"));
@@ -121,7 +121,7 @@ export const deleteContactForm = async (req, res, next) => {
 export const getContactFormById = catchAsyncError(async (req, res, next) => {
   const { formId } = req.params;
 
-  const contactForm = await ContactForm.findById({_id:formId, isdeleted: false});
+  const contactForm = await ContactForm.findOne({_id:formId, isdeleted: false});
 
   if (!contactForm) {
     return next(new ErrorHandler(404, "Contact form not found"));
@@ -138,7 +138,7 @@ export const getContactFormById = catchAsyncError(async (req, res, next) => {
 export const updateLiveFrom = catchAsyncError(async (req, res, next) => {
   const { formId } = req.params;
 
-  const contactForm = await ContactForm.findById({_id:formId, isdeleted: false});
+  const contactForm = await ContactForm.findOne({_id:formId, isdeleted: false});
   if (!contactForm) {
     return next(new ErrorHandler(404, "Contact form not found"));
   }
@@ -155,7 +155,7 @@ export const updateLiveFrom = catchAsyncError(async (req, res, next) => {
 export const updateIncomplete = catchAsyncError(async (req, res, next) => {
   const { formId } = req.params;
 
-  const contactForm = await ContactForm.findById({_id:formId, isdeleted: false});
+  const contactForm = await ContactForm.findOne({_id:formId, isdeleted: false});
   
   if (!contactForm) {
     return next(new ErrorHandler(404, "Contact form not found"));

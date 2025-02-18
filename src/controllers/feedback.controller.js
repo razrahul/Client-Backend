@@ -75,7 +75,7 @@ export const getByIdFeedback = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   // Find feedback and populate user details
-  const feedbacks = await Feedback.findById({ _id: id, isdeleted:false }).populate("user");
+  const feedbacks = await Feedback.findOne({ _id: id, isdeleted:false }).populate("user");
 
   if (!feedbacks) {
     return next(new ErrorHandler(404, "Feedback not found" ));
@@ -137,7 +137,7 @@ export const updateLiveStatus = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   // Use findOne instead of find to get a single document
-  const feedback = await Feedback.findById({ _id: id, isdeleted: false });
+  const feedback = await Feedback.findOne({ _id: id, isdeleted: false });
 
   if (!feedback) {
     return next(new ErrorHandler(404, "Feedback not found" ));

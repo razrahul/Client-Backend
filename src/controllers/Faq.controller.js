@@ -49,7 +49,7 @@ export const getAllLiveFaq = catchAsyncError(async (req, res, next) => {
 export const getFaqById = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
-  const faq = await Faq.findById({ _id: id, isdeleted: false });
+  const faq = await Faq.findOne({ _id: id, isdeleted: false });
 
   if (!faq) {
     return next(new ErrorHandler(404, "Faq not found"));
@@ -66,7 +66,7 @@ export const updateFaq = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const { question, answer } = req.body;
 
-  const faq = await Faq.findById({ _id: id, isdeleted: false });
+  const faq = await Faq.findOne({ _id: id, isdeleted: false });
 
   if (!faq) {
     return next(new ErrorHandler(404, "Faq not found"));
@@ -88,7 +88,7 @@ export const updateFaq = catchAsyncError(async (req, res, next) => {
 export const deleteFaq = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
-  const faq = await Faq.findById({ _id: id, isdeleted: false });
+  const faq = await Faq.findOne({ _id: id, isdeleted: false });
 
   if (!faq) {
     return next(new ErrorHandler(404, "Faq not found"));
