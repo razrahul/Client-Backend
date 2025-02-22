@@ -122,3 +122,4 @@ src/swaggerUi.yaml
 
 #for build file
 .babelrc
+dist.zip

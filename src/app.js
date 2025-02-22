@@ -1,5 +1,5 @@
 import express from "express";
-import {config} from "dotenv"
+import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import ErrorMiddleware from "./middlewares/Error.js";
@@ -12,9 +12,7 @@ import path from "path";
 import YAML from "yaml";
 
 
-config({
-    path: "./config/config.env",
-  });
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
